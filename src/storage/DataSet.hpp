@@ -102,7 +102,7 @@ class DataSet {
         }
         // start from 0, so add 1
         num_cols++;
-        std::cout << id << "examples:" << num_rows << ",features:" << num_cols << "("
+        std::cout << "Worker " << id << ": examples:" << num_rows << ",features:" << num_cols << "("
                   << real_num_cols - 1 << ")" << std::endl;
         num_cols = real_num_cols;
         for (int i = 0; i < num_rows; i++) {

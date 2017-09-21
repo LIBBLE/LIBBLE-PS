@@ -5,16 +5,16 @@ import sys
 
 #--------------------------------------
 # modify these arguments to run the program
-machine_file = 'mach'
-data_file = '/data/zhanggd/news20.binary'
-n_cols = ' 1355191 '
-n_rows = ' 19954 '
-n_servers = ' 1 '
-n_workers = ' 4 '
-n_epoches = ' 1 '
-n_iters = ' 100 ' # this for scope
-rate = ' 5 '
-lam = ' 0.0001 ' #lambda
+machine_file = 'mach' # hosts file
+data_file = '/data/webspam_wc_normalized_trigram.svm' #data path
+n_cols = ' 16609143 '
+n_rows = ' 350000 '
+n_servers = ' 2 ' 
+n_workers = ' 16 '
+n_epoches = ' 1 ' 
+n_iters = ' 10 '
+rate = ' 1 ' #step size
+lam = ' 0.0001 ' #regularization hyperparameter 
 param_init = ' 0 ' # parameter initialization. 0--all zero 1--randomize to [0,1]
 #--------------------------------------
 
