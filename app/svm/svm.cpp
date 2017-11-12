@@ -63,9 +63,12 @@ int main(int argc, char **argv) {
     if ((pos = arg_parser("-param_init", argc, argv)) > 0) param_init = atoi(argv[pos + 1]);
 
     n_cols += 1;  // add the bias term
+
     assert(n_servers + n_workers + 1 == num_procs);
-    Model *model_ptr = new LRModel();
+
+    Model *model_ptr = new SVMModel();
     Comm *comm_ptr = new Comm(n_servers, n_workers, n_cols);
+
     Trainer *trainer_ptr = nullptr;
     if (proc_id == 0) {
         trainer_ptr = new Coordinator(n_servers, n_workers, n_cols, n_rows, n_epoches, n_iters,

@@ -112,6 +112,55 @@ class DataSet {
 
         return 0;
     }
+	
+	int read_from_test_file(std::string data_file, int real_num_cols) {
+        num_rows = 0;
+		std::string buf;
+		std::ifstream fin(data_file.c_str());
+		if (!fin) {error(AT, "error");}
+        while (getline(fin, buf)) {
+            num_rows++;
+        }
+        fin.close();
+
+        data = new DataPoint[num_rows];
+        int row_count = 0;
+        num_cols = 0;
+		fin.open(data_file.c_str());
+        if (!fin) error(AT, "error");;
+        while (getline(fin, buf)) {
+            char str0[] = " :";
+			char *result = strtok((char *)buf.c_str(), str0);
+			if ((strcmp(result, "1") == 0) || (strcmp(result, "+1") == 0) ||
+                (strcmp(result, "1.0") == 0) || (strcmp(result, "+1.0") == 0))
+                data[row_count].label = 1.0;
+            else
+				data[row_count].label = -1.0;
+
+            while (result = strtok(NULL, str0)) {
+                // key start from 0
+                data[row_count].key.push_back(atoi(result) - 1);
+                result = strtok(NULL, str0);
+                data[row_count].value.push_back(atof(result));
+            }
+            if (data[row_count].key[data[row_count].key.size() - 1] > num_cols) {
+                num_cols = data[row_count].key[data[row_count].key.size() - 1];
+            }
+			row_count++;
+        }
+        fin.close();
+		
+        // start from 0, so add 1
+        num_cols++;
+        std::cout << "test_data " << ": examples:" << num_rows << ",features:" << num_cols << "("
+                  << real_num_cols - 1 << ")" << std::endl;
+        num_cols = real_num_cols;
+        for (int i = 0; i < num_rows; i++) {
+            data[i].key.push_back(num_cols - 1);
+            data[i].value.push_back(1.0);
+        }
+        return 0;
+    }
 
     void count_c_num(std::vector<int> &c) {
         for (int i = 0; i < num_rows; i++) {

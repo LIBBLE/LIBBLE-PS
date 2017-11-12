@@ -17,6 +17,7 @@
 #define _INCLUDE_MODEL_HPP_
 
 #include "LRModel.hpp"
+#include "SVMModel.hpp"
 #include "Model.hpp"
 
 #endif

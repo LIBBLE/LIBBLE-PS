@@ -42,5 +42,6 @@
 #define WCP_INFO 305   // worker sends pull info to coordinator
 #define WCG_INFO 306   // worker sends push info to coordinator
 #define WS_C 307       // worker sends c to server
+#define WC_ACCU 308    // worker sends accuracy to coordinator
 
 #endif

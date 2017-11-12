@@ -36,28 +36,16 @@ class Model {
     Model() {}
     virtual double compute_loss(const DataSet &ds, const Parameter &params, int num_of_all_data,
                                 int num_workers, double lambda) = 0;
-
-    virtual void compute_batch_gradient(const DataSet &ds, std::uniform_int_distribution<> &u,
-                                        std::default_random_engine &e, const Parameter &params,
-                                        Gradient_Dense &g, const double &lambda,
-                                        const int &batch_size) = 0;
-
+								
     virtual void compute_full_gradient(const DataSet &ds, const Parameter &params,
-                                       Gradient_Dense &g, const double &lambda,
-                                       const int &num_of_all_data) = 0;
-
-    virtual void update_parameters(Parameter &params, const Gradient_Dense &g, const double &rate,
-                                   const double &lambda) = 0;
-
-    virtual void local_update_para(const DataSet &ds, std::uniform_int_distribution<> &u,
-                                   std::default_random_engine &e, Parameter &params,
-                                   const Gradient_Dense &full_grad, const double &lambda,
-                                   const int &num_epoches, const double &rate, const int &id) = 0;
-
-    virtual void local_update_sparse_para(const DataSet &ds, std::uniform_int_distribution<> &u,
+                                       Gradient_Dense &g, const int &num_of_all_data) = 0;
+									
+    virtual void update(const DataSet &ds, std::uniform_int_distribution<> &u,
                                           std::default_random_engine &e, Parameter &params,
                                           const Gradient_Dense &full_grad, const double &lambda,
                                           const int &num_epoches, const double &rate) = 0;
+
+
 };
 
 #endif

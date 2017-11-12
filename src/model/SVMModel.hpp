@@ -13,16 +13,16 @@
         * See the License for the specific language governing permissions and
         * limitations under the License. */
 
-#ifndef _LRMODEL_HPP_
-#define _LRMODEL_HPP_
+#ifndef _SVMMODEL_HPP_
+#define _SVMMODEL_HPP_
 
 #include <cmath>
 #include "../storage/include_storage.hpp"
 #include "Model.hpp"
 
-class LRModel : public Model {
+class SVMModel : public Model {
    public:
-    LRModel() {}
+    SVMModel() {}
     double compute_loss(const DataSet &ds, const Parameter &params, int num_of_all_data,
                         int num_workers, double lambda) override {
         double loss = 0;
@@ -32,7 +32,9 @@ class LRModel : public Model {
             for (int j = 0; j < d.key.size(); j++) {
                 z += params.parameter[d.key[j]] * d.value[j];
             }
-            loss += log(1 + exp(-d.label * z));
+			if(d.label*z <1){
+				loss += (1 - d.label*z);
+			}
         }
         loss /= (double)num_of_all_data;
 		double index = 0.5 * lambda / ((double)num_workers);
@@ -51,11 +53,13 @@ class LRModel : public Model {
             for (int j = 0; j < d.key.size(); j++) {
                 z += params.parameter[d.key[j]] * d.value[j];
             }
-            z = -d.label * (1 - 1 / (1 + exp(-d.label * z)))/num_of_all_data;
-            for (int j = 0; j < d.key.size(); j++) {
-                g.gradient[d.key[j]] += z * d.value[j];
-            }
+			if(d.label*z <1){
+				for (int j = 0; j < d.key.size(); j++) {
+					g.gradient[d.key[j]] -= d.label * d.value[j];
+				}
+			}
         }
+		vector_divi(g.gradient, num_of_all_data);
     }
 	
 	void update(const DataSet &ds, std::uniform_int_distribution<> &u,
@@ -74,10 +78,18 @@ class LRModel : public Model {
             }
             b = (1 - lambda * rate) * b - rate;
             a = (1 - lambda * rate) * a;
-            z = rate * d.label * (1 / (1 + exp(-d.label * z1)) - 1 / (1 + exp(-d.label * z2))) / a;
-            for (int j = 0; j < d.key.size(); j++) {
-                params.parameter[d.key[j]] -= z * d.value[j];
-            }
+			
+			if(d.label * z1 >1 && d.label * z2 <1){
+				for (int j = 0; j < d.key.size(); j++) {
+					params.parameter[d.key[j]] -= rate * d.label * d.value[j]/a;
+				}
+			}
+			else if(d.label * z1 <1 && d.label * z2 >1){
+				for (int j = 0; j < d.key.size(); j++) {
+					params.parameter[d.key[j]] += rate * d.label * d.value[j]/a;
+				}
+			}
+			else;
         }
     }
 };

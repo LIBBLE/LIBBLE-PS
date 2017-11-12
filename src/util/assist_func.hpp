@@ -52,11 +52,11 @@ int get_local_params_size(const int &n_cols, const int &n_servers, const int &se
     }
 }
 
-void write_file(std::string data_file, std::string info, double loss) {
+void write_file(std::string data_file, std::string info, double loss, double accuracy) {
     std::string output_file = data_file;
     std::ofstream fout(output_file.c_str(), std::ios::out | std::ios::app);
     fout.precision(15);
-    fout << info << loss << std::endl;
+    fout << info << loss << " " << accuracy << std::endl;
     fout.close();
 }
 

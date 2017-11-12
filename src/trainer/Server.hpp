@@ -55,7 +55,7 @@ class Server : public Trainer {
         // check if a exceed
         if (server_id == 1) {
             double check_a = 1;
-            for (int i; i < num_epoches * (num_of_all_data / num_workers + 1); i++) {
+            for (int i = 0; i < num_epoches * (num_of_all_data / num_workers + 1); i++) {
                 check_a *= (1 - rate * lambda);
             }
             std::cout << "check_a info(if its index exceed 300, over), a:" << check_a
@@ -64,15 +64,15 @@ class Server : public Trainer {
 
         for (int i = 0; i < num_iters; i++) {
             MPI_Barrier(MPI_COMM_WORLD);  // start
+
+            pull_part_full_grad();
+
+            push_full_grad();
+
+            pull_params();
+           
             push();
-
-            scope_pull_part_full_grad();
-
-            scope_push_full_grad();
-
-            scope_pull_params();
-            MPI_Barrier(MPI_COMM_WORLD);  // end
-            push();
+			MPI_Barrier(MPI_COMM_WORLD);  // end
         }
 
         send_params_to_coordinator();
@@ -81,14 +81,13 @@ class Server : public Trainer {
 
     void push() { comm_ptr->S_send_params_to_all_W(params); }
 
-    void scope_push_full_grad() { comm_ptr->S_send_grads_to_all_W(grad); }
+    void push_full_grad() { comm_ptr->S_send_grads_to_all_W(grad); }
 
-    void scope_pull_part_full_grad() {
+    void pull_part_full_grad() {
         comm_ptr->S_recv_grads_from_all_W(grad);
-        vector_divi(grad.gradient, num_of_all_data);
     }
 
-    void scope_pull_params() {
+    void pull_params() {
         comm_ptr->S_recv_params_from_all_W(params);
         double a = 1, b = 0;
         for (int i = 0; i < num_of_all_data / num_workers; i++) {

@@ -56,6 +56,12 @@ class Comm {
         }
         return total_loss;
     }
+	
+	double C_recv_accuracy_from_W() {
+        double accuracy;
+        MPI_Recv(&accuracy, 1, MPI_DOUBLE, worker_list[0], WC_ACCU, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        return accuracy;
+    }
 
     void C_recv_params_from_all_S(Parameter &params) {
         MPI_Status status;
@@ -112,6 +118,10 @@ class Comm {
 
     void W_send_loss_to_C(double loss) {
         MPI_Send(&loss, 1, MPI_DOUBLE, 0, WC_LOSS, MPI_COMM_WORLD);
+    }
+	
+	void W_send_accuracy_to_C(double accuracy) {
+        MPI_Send(&accuracy, 1, MPI_DOUBLE, 0, WC_ACCU, MPI_COMM_WORLD);
     }
 
     void W_send_grads_to_all_S(const Gradient_Dense &grad) {
