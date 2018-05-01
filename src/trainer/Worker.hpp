@@ -31,6 +31,8 @@ class Worker : public Trainer {
     double lambda;
     char info;
     double rate;
+    double MIN = pow(0.1,300);
+    int recover_index = 0;
     DataSet dataset;
     Parameter params;
     Gradient_Dense grad;
@@ -54,6 +56,14 @@ class Worker : public Trainer {
 
     void work() override {
         read_data();
+        double check_a = 1;
+        for (int i = 0; i < num_epoches * (num_of_all_data / num_workers ); i++) {
+            check_a *= (1 - rate * lambda);
+            if(check_a < MIN){
+                recover_index = i;
+                break;
+            }
+        }
 		if(test_data_file != "null" && worker_id == 1) {read_test_data();}
         std::random_device rd;
         std::default_random_engine e(rd());
@@ -126,7 +136,7 @@ class Worker : public Trainer {
     }
 
     void local_update_sparse(std::uniform_int_distribution<> &u, std::default_random_engine &e) {
-        model_ptr->update(dataset, u, e, params, full_grad, lambda, num_epoches, rate);
+        model_ptr->update(dataset, u, e, params, full_grad, lambda, num_epoches, rate, recover_index, num_of_all_data, num_workers);
     }
 
     // report loss to coordinator

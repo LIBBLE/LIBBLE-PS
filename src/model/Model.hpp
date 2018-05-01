@@ -34,16 +34,17 @@ class Model {
    private:
    public:
     Model() {}
-    virtual double compute_loss(const DataSet &ds, const Parameter &params, int num_of_all_data,
-                                int num_workers, double lambda) = 0;
+    virtual double compute_loss(const DataSet &ds, const Parameter &params, const int num_of_all_data,
+                                const int num_workers, const double lambda) = 0;
 								
     virtual void compute_full_gradient(const DataSet &ds, const Parameter &params,
-                                       Gradient_Dense &g, const int &num_of_all_data) = 0;
+                                       Gradient_Dense &g, const int num_of_all_data) = 0;
 									
     virtual void update(const DataSet &ds, std::uniform_int_distribution<> &u,
                                           std::default_random_engine &e, Parameter &params,
-                                          const Gradient_Dense &full_grad, const double &lambda,
-                                          const int &num_epoches, const double &rate) = 0;
+                                          const Gradient_Dense &full_grad, const double lambda,
+                                          const int num_epoches, const double rate, const int recover_index,
+                                          const int num_of_all_data, const int num_workers) = 0;
 
 
 };

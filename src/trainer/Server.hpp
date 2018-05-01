@@ -30,6 +30,8 @@ class Server : public Trainer {
     double rate;
     double lambda;
     int param_init;
+    double MIN = pow(0.1,300);
+    int recover_index = 0;
 
    public:
     Server(int n_ser, int n_wor, int n_c, int n_r, int n_e, int n_i, int mode_, std::string f,
@@ -53,13 +55,18 @@ class Server : public Trainer {
     void work() override {
         push();
         // check if a exceed
-        if (server_id == 1) {
-            double check_a = 1;
-            for (int i = 0; i < num_epoches * (num_of_all_data / num_workers + 1); i++) {
-                check_a *= (1 - rate * lambda);
+        double check_a = 1;
+        for (int i = 0; i < num_epoches * (num_of_all_data / num_workers); i++) {
+            check_a *= (1 - rate * lambda);
+            if(check_a < MIN){
+                recover_index = i;
+                break;
             }
+        }
+        if (server_id == 1) {
             std::cout << "check_a info(if its index exceed 300, over), a:" << check_a
                       << ", 1/a:" << 1 / check_a << std::endl;
+            std::cout << "recover_index: " << recover_index << std::endl;
         }
 
         for (int i = 0; i < num_iters; i++) {
@@ -90,7 +97,8 @@ class Server : public Trainer {
     void pull_params() {
         comm_ptr->S_recv_params_from_all_W(params);
         double a = 1, b = 0;
-        for (int i = 0; i < num_of_all_data / num_workers; i++) {
+        int r_i = recover_index==0?(num_epoches*(num_of_all_data/num_workers)):((num_epoches*(num_of_all_data/num_workers))%recover_index);
+        for (int i = 0; i < r_i; i++) {
             a = (1 - lambda * rate) * a;
             b = (1 - lambda * rate) * b - rate;
         }

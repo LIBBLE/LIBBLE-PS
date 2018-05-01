@@ -23,8 +23,8 @@
 class LRModel : public Model {
    public:
     LRModel() {}
-    double compute_loss(const DataSet &ds, const Parameter &params, int num_of_all_data,
-                        int num_workers, double lambda) override {
+    double compute_loss(const DataSet &ds, const Parameter &params, const int num_of_all_data,
+                        const int num_workers, const double lambda) override {
         double loss = 0;
         for (int i = 0; i < ds.num_rows; i++) {
             DataPoint &d = ds.data[i];
@@ -43,7 +43,7 @@ class LRModel : public Model {
     }
 	
 	void compute_full_gradient(const DataSet &ds, const Parameter &params, Gradient_Dense &g,
-                               const int &num_of_all_data) override {
+                               const int num_of_all_data) override {
         g.reset();
         for (int i = 0; i < ds.num_rows; i++) {
             DataPoint &d = ds.data[i];
@@ -60,11 +60,17 @@ class LRModel : public Model {
 	
 	void update(const DataSet &ds, std::uniform_int_distribution<> &u,
                                   std::default_random_engine &e, Parameter &params,
-                                  const Gradient_Dense &full_grad, const double &lambda,
-                                  const int &num_epoches, const double &rate) override {
+                                  const Gradient_Dense &full_grad, const double lambda,
+                                  const int num_epoches, const double rate, const int recover_index,
+                                  const int num_of_all_data, const int num_workers) override {
         const std::vector<double> old_params = params.parameter;
         double a = 1, b = 0;
-        for (int i = 0; i < num_epoches * ds.num_rows; i++) {
+        for (int i = 0; i < num_epoches * (num_of_all_data/num_workers); i++) {
+            if(recover_index !=0 && i%recover_index == 0){
+                vector_multi_add(params.parameter, a, full_grad.gradient, b);
+                a = 1;
+                b = 0;
+            }
             double z, z1 = 0, z2 = 0;
             const DataPoint &d = ds.data[u(e)];
             for (int j = 0; j < d.key.size(); j++) {
