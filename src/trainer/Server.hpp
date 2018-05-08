@@ -30,7 +30,7 @@ class Server : public Trainer {
     double rate;
     double lambda;
     int param_init;
-    double MIN = pow(0.1,300);
+    double MIN = pow(0.1,290);
     int recover_index = 0;
 
    public:
@@ -62,11 +62,6 @@ class Server : public Trainer {
                 recover_index = i;
                 break;
             }
-        }
-        if (server_id == 1) {
-            std::cout << "check_a info(if its index exceed 300, over), a:" << check_a
-                      << ", 1/a:" << 1 / check_a << std::endl;
-            std::cout << "recover_index: " << recover_index << std::endl;
         }
 
         for (int i = 0; i < num_iters; i++) {

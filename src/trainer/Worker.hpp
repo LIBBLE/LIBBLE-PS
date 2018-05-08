@@ -31,7 +31,7 @@ class Worker : public Trainer {
     double lambda;
     char info;
     double rate;
-    double MIN = pow(0.1,300);
+    double MIN = pow(0.1,290);
     int recover_index = 0;
     DataSet dataset;
     Parameter params;
